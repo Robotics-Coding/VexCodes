@@ -1,0 +1,57 @@
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       C:\Users\emani                                            */
+/*    Created:      Fri Jun 19 2020                                           */
+/*    Description:  V5 project                                                */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// Drivetrain           drivetrain    1, 2, 3, 4, 7   
+// ---- END VEXCODE CONFIGURED DEVICES ----
+
+#include "vex.h"
+
+using namespace vex;
+
+float start_val = 50.0;
+int main() {
+  // Initializing Robot Configuration. DO NOT REMOVE!
+  vexcodeInit();
+  
+  /*
+  Drivetrain.setTurnVelocity(50, pct);
+  Drivetrain.turnFor(90, deg, false);
+  
+  while(Drivetrain.isTurning()){
+    Drivetrain.setTurnVelocity(50, pct);
+  }
+  */
+/*
+  
+  Drivetrain.driveFor(700, mm, 30,rpm, true);
+
+  Drivetrain.driveFor(-1000, mm, -30, rpm, true);
+
+*/
+
+  Brain.Screen.print(Drivetrain.heading());
+  Drivetrain.turnFor(135, degrees,40, rpm);
+  Brain.Screen.print(Drivetrain.heading());
+  Brain.Screen.newLine();
+  
+  wait(1000, msec);
+  
+  Brain.Screen.print(Drivetrain.heading());
+  
+  //Drivetrain.turnFor(-90, degrees);
+  
+  
+  
+
+
+  
+}
