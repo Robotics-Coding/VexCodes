@@ -18,15 +18,40 @@
 using namespace vex;
 
 float start_val = 50.0;
+float final_val = 0;
+float head;
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
-/*
+  
+
+
+  
+  
   while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
+    
+    if(Drivetrain.heading()>340){
+      head = Drivetrain.heading()-360.0;
+    }
+    else{
+      head = Drivetrain.heading();
+    }
+
+    float speed = -5/9*head + start_val;
+
+    Drivetrain.turn(right,speed, rpm);
+
+
 
   }
-  */
+
+  
+  Drivetrain.stop();
+
+
+  wait(1000, msec);
+  
 
 
   /*
@@ -45,9 +70,11 @@ int main() {
 
 */
 
+
+
   Brain.Screen.print(Drivetrain.heading());
 
-
+/*
   Drivetrain.turnToHeading(90, degrees,80, rpm);
   Brain.Screen.print(Drivetrain.heading());
   wait(150, msec);
@@ -77,7 +104,7 @@ int main() {
   
   
   
-
+*/
 
   
 }
