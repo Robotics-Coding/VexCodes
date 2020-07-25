@@ -39,8 +39,13 @@ int main() {
     }
 
     float speed = -5/9*head + start_val;
+    Brain.Screen.print(speed);
 
-    Drivetrain.turn(right,speed, rpm);
+    leftMotorA.spin(fwd,speed,rpm);
+    leftMotorB.spin(fwd,speed,rpm);
+    rightMotorA.spin(fwd,-speed,rpm);
+    rightMotorB.spin(fwd,-speed,rpm);
+
 
 
 
