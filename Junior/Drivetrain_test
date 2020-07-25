@@ -39,11 +39,19 @@ int main() {
 */
 
   Brain.Screen.print(Drivetrain.heading());
-  Drivetrain.turnFor(135, degrees,40, rpm);
+
+
+  Drivetrain.turnToHeading(90, degrees,80, rpm);
   Brain.Screen.print(Drivetrain.heading());
+  wait(150, msec);
+  
+
+
   Brain.Screen.newLine();
   
-  wait(1000, msec);
+  Drivetrain.turnToHeading(90, degrees,-5, rpm);
+
+  wait(500, msec);
   
   Brain.Screen.print(Drivetrain.heading());
   
