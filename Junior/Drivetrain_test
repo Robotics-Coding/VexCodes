@@ -21,7 +21,14 @@ float start_val = 50.0;
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
-  
+
+/*
+  while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
+
+  }
+  */
+
+
   /*
   Drivetrain.setTurnVelocity(50, pct);
   Drivetrain.turnFor(90, deg, false);
@@ -48,10 +55,21 @@ int main() {
 
 
   Brain.Screen.newLine();
-  
-  Drivetrain.turnToHeading(90, degrees,-5, rpm);
 
-  wait(500, msec);
+  if(Drivetrain.heading()>90){
+    Drivetrain.turnToHeading(90, degrees,-5, rpm);
+
+    wait(500, msec);
+
+  }
+  else{
+    Drivetrain.turnToHeading(90, degrees,5, rpm);
+
+    wait(500, msec);
+
+  }
+  
+  
   
   Brain.Screen.print(Drivetrain.heading());
   
