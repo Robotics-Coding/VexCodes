@@ -1,83 +1,49 @@
-/*----------------------------------------------------------------------------*/
-/*                                                                            */
-/*    Module:       main.cpp                                                  */
-/*    Author:       C:\Users\emani                                            */
-/*    Created:      Fri Jun 19 2020                                           */
-/*    Description:  V5 project                                                */
-/*                                                                            */
-/*----------------------------------------------------------------------------*/
-
-// ---- START VEXCODE CONFIGURED DEVICES ----
-// Robot Configuration:
-// [Name]               [Type]        [Port(s)]
-// Drivetrain           drivetrain    1, 2, 3, 4, 7   
-// ---- END VEXCODE CONFIGURED DEVICES ----
-
 #include "vex.h"
 
 using namespace vex;
+using signature = vision::signature;
+using code = vision::code;
 
-float start_val = 50.0;
-int main() {
-  // Initializing Robot Configuration. DO NOT REMOVE!
-  vexcodeInit();
+// A global instance of brain used for printing to the V5 Brain screen
+brain  Brain;
 
-/*
-  while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
+// VEXcode device constructors
+motor leftMotorA = motor(PORT3, ratio18_1, false);
+motor leftMotorB = motor(PORT1, ratio18_1, false);
+motor_group LeftDriveSmart = motor_group(leftMotorA, leftMotorB);
 
+motor rightMotorA = motor(PORT2, ratio18_1, true); 
+motor rightMotorB = motor(PORT10, ratio18_1, true); 
+motor_group RightDriveSmart = motor_group(rightMotorA, rightMotorB);
+
+inertial TurnGyroSmart = inertial(PORT11);
+smartdrive Drivetrain= smartdrive(LeftDriveSmart, RightDriveSmart, TurnGyroSmart,319.19, 320, 165, mm, 1);
+
+// VEXcode generated functions
+
+
+
+/**
+ * Used to initialize code/tasks/devices added using tools in VEXcode Text.
+ * 
+ * This should be called at the start of your int main function.
+ */
+void vexcodeInit( void ) {
+  Brain.Screen.print("Device initialization...");
+  Brain.Screen.setCursor(2, 1);
+  // calibrate the drivetrain gyro
+  wait(200, msec);
+  TurnGyroSmart.calibrate();
+  Brain.Screen.print("Calibrating Gyro for Drivetrain");
+  // wait for the gyro calibration process to finish
+  while (TurnGyroSmart.isCalibrating()) {
+    wait(25, msec);
   }
-  */
+  // reset the screen now that the calibration is complete
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1,1);
+  wait(50, msec);
+  Brain.Screen.clearScreen();
 
-
-  /*
-  Drivetrain.setTurnVelocity(50, pct);
-  Drivetrain.turnFor(90, deg, false);
-  
-  while(Drivetrain.isTurning()){
-    Drivetrain.setTurnVelocity(50, pct);
-  }
-  */
-/*
-  
-  Drivetrain.driveFor(700, mm, 30,rpm, true);
-
-  Drivetrain.driveFor(-1000, mm, -30, rpm, true);
-
-*/
-
-  Brain.Screen.print(Drivetrain.heading());
-
-
-  Drivetrain.turnToHeading(90, degrees,80, rpm);
-  Brain.Screen.print(Drivetrain.heading());
-  wait(150, msec);
-  
-
-
-  Brain.Screen.newLine();
-
-  if(Drivetrain.heading()>90){
-    Drivetrain.turnToHeading(90, degrees,-5, rpm);
-
-    wait(500, msec);
-
-  }
-  else{
-    Drivetrain.turnToHeading(90, degrees,5, rpm);
-
-    wait(500, msec);
-
-  }
-  
-  
-  
-  Brain.Screen.print(Drivetrain.heading());
-  
-  //Drivetrain.turnFor(-90, degrees);
-  
-  
-  
-
-
-  
+  //INSERT UI OVER HERE
 }
