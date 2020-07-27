@@ -32,7 +32,7 @@ Brain.resetTimer();
   
   while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
 
-    if(Brain.timer(sec)>10){
+    if(Brain.timer(sec)>5){
       break;
     }
     
