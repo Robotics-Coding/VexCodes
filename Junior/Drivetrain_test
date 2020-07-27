@@ -20,16 +20,21 @@ using namespace vex;
 float start_val = 50.0;
 float final_val = 0;
 float head;
+
 int main() {
   // Initializing Robot Configuration. DO NOT REMOVE!
   vexcodeInit();
 
   
-
+Brain.resetTimer();
 
   
   
   while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
+
+    if(Brain.timer(sec)>10){
+      break;
+    }
     
     if(Drivetrain.heading()>340){
       Brain.Screen.print("Less than 360");
@@ -41,11 +46,11 @@ int main() {
     }
 
     float speed = -5/9*head + start_val;
-    Brain.Screen.clearScreen();
     Brain.Screen.print("Turning at speed:");
     Brain.Screen.print(speed);
     Brain.Screen.print(" at heading ");
     Brain.Screen.print(head);
+    Brain.Screen.newLine();
     wait(80,msec);
 
     
