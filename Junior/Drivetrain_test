@@ -28,8 +28,19 @@ int main() {
   
 Brain.resetTimer();
 
+
+while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
+
+  leftMotorA.spin(fwd,20,rpm);
+  leftMotorB.spin(fwd,20,rpm);
+  rightMotorA.spin(fwd,-20,rpm);
+  rightMotorB.spin(fwd,-20,rpm);
+  Brain.Screen.print(TurnGyroSmart.heading());
+  Brain.Screen.newLine();
+  wait(800,msec);
+}
   
-  
+  /*
   while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
 
     if(Brain.timer(sec)>5){
@@ -44,6 +55,8 @@ Brain.resetTimer();
     else{
       head = Drivetrain.heading();
     }
+    
+    TurnGyroSmart.heading();
 
     float speed = -5/9*head + start_val;
     Brain.Screen.print("Turning at speed:");
@@ -76,7 +89,7 @@ Brain.resetTimer();
   wait(1000, msec);
   
 
-
+*/
 
   /*
   Drivetrain.setTurnVelocity(50, pct);
