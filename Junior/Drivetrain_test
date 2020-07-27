@@ -32,6 +32,8 @@ int main() {
   while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
     
     if(Drivetrain.heading()>340){
+      Brain.Screen.print("Less than 360");
+      Brain.Screen.newLine();
       head = Drivetrain.heading()-360.0;
     }
     else{
@@ -39,7 +41,15 @@ int main() {
     }
 
     float speed = -5/9*head + start_val;
+    Brain.Screen.clearScreen();
+    Brain.Screen.print("Turning at speed:");
     Brain.Screen.print(speed);
+    Brain.Screen.print(" at heading ");
+    Brain.Screen.print(head);
+    wait(80,msec);
+
+    
+
 
     leftMotorA.spin(fwd,speed,rpm);
     leftMotorB.spin(fwd,speed,rpm);
@@ -52,11 +62,15 @@ int main() {
   }
 
   
-  Drivetrain.stop();
+    leftMotorA.stop();
+    leftMotorB.stop();
+    rightMotorA.stop();
+    rightMotorB.stop();
 
 
   wait(1000, msec);
   
+
 
 
   /*
@@ -77,7 +91,8 @@ int main() {
 
 
 
-  Brain.Screen.print(Drivetrain.heading());
+  //Brain.Screen.print(Drivetrain.heading());
+
 
 /*
   Drivetrain.turnToHeading(90, degrees,80, rpm);
