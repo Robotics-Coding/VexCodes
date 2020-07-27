@@ -31,6 +31,10 @@ Brain.resetTimer();
 
 while(Drivetrain.heading()<90 || Drivetrain.heading()>340){
 
+  if(Brain.timer(sec)>5){
+      break;
+    }
+  
   leftMotorA.spin(fwd,20,rpm);
   leftMotorB.spin(fwd,20,rpm);
   rightMotorA.spin(fwd,-20,rpm);
