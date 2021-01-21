@@ -1,0 +1,49 @@
+/*----------------------------------------------------------------------------*/
+/*                                                                            */
+/*    Module:       main.cpp                                                  */
+/*    Author:       C:\Users\emani                                            */
+/*    Created:      Tue Jan 19 2021                                           */
+/*    Description:  V5 project                                                */
+/*                                                                            */
+/*----------------------------------------------------------------------------*/
+
+// ---- START VEXCODE CONFIGURED DEVICES ----
+// Robot Configuration:
+// [Name]               [Type]        [Port(s)]
+// EncoderE             encoder       E, F            
+// Motor1               motor         1               
+// ---- END VEXCODE CONFIGURED DEVICES ----
+
+#include "vex.h"
+
+using namespace vex;
+
+int main() {
+  // Initializing Robot Configuration. DO NOT REMOVE!
+  vexcodeInit();
+  EncoderE.setPosition(0, degrees);
+
+  float pos = 0.0;
+  while(EncoderE.position(degrees) < 360){
+    float last_pos = pos;
+    Motor1.spin(forward);
+    pos = EncoderE.position(degrees);
+
+    if(abs(pos - last_pos)> 1000){
+      EncoderE.setPosition(last_pos, degrees);
+    }
+    
+    Brain.Screen.print(pos);
+    EncoderE.velocity(rpm);
+    Brain.Screen.newLine();
+
+
+    
+    vex::task::sleep(10);
+  }
+
+  Motor1.stop();
+  Brain.Screen.print(EncoderE.position(degrees));
+  
+  
+}
