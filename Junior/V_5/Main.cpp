@@ -82,6 +82,15 @@ void spinwheels() {
 }
 
 
+void wheels_down() {
+
+  roller.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+  highRoller.spin(vex::directionType::fwd, 100, vex::velocityUnits::pct);
+  index_roller.spin(vex::directionType::fwd, -100, vex::velocityUnits::pct);
+  
+}
+
+
 //SPINNING ONLY THE BOTTOM ROLLERS (spinning upwards):
 
 void spin_bottom_wheels (){
@@ -140,7 +149,7 @@ double speed_calc(double revs, double dist){
   }
   
   else{
-    speed = -130;
+    speed = -100;
   }
   
   
@@ -181,12 +190,16 @@ void gradient_drive(double revs){
   RightFront.setRotation(0, rev);
   LeftFront.setRotation(0, rev);
   
+  wait(0.3,sec);
 
     while(RightFront.rotation(rev)> revs){
       double reading = RightFront.rotation(rev);
       double speed = speed_calc(reading, revs-reading);
 
+      Brain.Screen.print(reading);
+
       Drivetrain.drive(fwd, speed, rpm);
+
     }
 
     Drivetrain.stop(hold);
@@ -206,9 +219,9 @@ void timed_gradient(double revs, double t){
   LeftFront.setRotation(0, rev);
 
   double t_1 = Brain.timer(msec);
-  Brain.Screen.print(t_1);
+  //Brain.Screen.print(t_1);
 
-    while(Brain.timer(msec)-t_1 <= t){
+  while(Brain.timer(msec)-t_1 <= t){
       double reading = RightFront.rotation(rev);
 
       
@@ -239,12 +252,13 @@ void make_turn(double speed, double ang, double tresh){
 
 void auton_turn(double speed, double ang){
   make_turn(speed, ang, 10);
+
   wait(100,msec);
-  if(Drivetrain.heading() > ang){
+  if(Drivetrain.heading() > ang-0.5){
       make_turn(9,ang,1.0);
     }
     
-    else if(Drivetrain.heading() < ang){
+    else if(Drivetrain.heading() < ang+0.5){
       make_turn(-9,ang,1.0);
     }
 
@@ -309,7 +323,9 @@ void shoot_corner_balls(){
 
 void poop(){
 
+
   bottom_out();
+  wheels_down();
   intake_out();
 
   wait(1.5,sec);
@@ -333,7 +349,9 @@ void poop(){
 
 void autonomous( void ) {
 
-  //1. LAUNCH THE PRELOAD INTO CORNER:
+  
+
+  //1. LAUNCH THE PRELOAD INTO GOAL A:
     
     spin_top_wheels();
     wait(0.5,sec);
@@ -350,7 +368,7 @@ void autonomous( void ) {
     roller_stop();
 
   
-    //3. TURN FOR SECOND GOAL AND SHOOT:
+    //3. TURN FOR GOAL B AND SHOOT:
     
     auton_turn(80, 180);
     wait(10,msec);
@@ -359,6 +377,8 @@ void autonomous( void ) {
 
     timed_gradient(-2.4, 1875);
     shoot_balls();
+
+
 
 
     //4. MOVE BACK, SPIT OUT BLUE, AND PICK UP NEXT BALL (near the corner):
@@ -378,12 +398,12 @@ void autonomous( void ) {
     gradient_drive(-4.0);
 
 
-    //5. TURN AND SHOOT THE BALL IN THRID TOWER:
+    //5. TURN AND SHOOT THE BALL IN GOAL C:
  
     auton_turn(50,230);
     auton_drive(-100, 1000);  //can be changed to gradient + lowered at some point
 
-    shoot_balls();
+    shoot_corner_balls();
 
     auton_drive_forward(80.0, 20.0);
 
@@ -393,7 +413,7 @@ void autonomous( void ) {
     ///// FIRST ROW FINISHED, SECOND ROW BEGINS
 
 
-  // 6. TURN AND PICKUP BALL FOR FOURTH GOAL:
+  // 6. TURN AND PICKUP BALL FOR GOAL D:
 
 
   auton_turn(-80, 0);
@@ -407,7 +427,7 @@ void autonomous( void ) {
   intake_stop();
 
 
-  //7. TURN FOR FOURTH GOAL AND SHOOT
+  //7. TURN FOR GOAL D AND SHOOT
 
   auton_turn(80,270);
   intake_spin();
@@ -423,7 +443,7 @@ void autonomous( void ) {
   wait(0.3,sec);
 
 
-  //8. GET BALL FOR FIFTH TOWER:
+  //8. GET BALL FOR GOAL E:
 
 
   auton_turn(-80,0);
@@ -440,7 +460,7 @@ void autonomous( void ) {
 
 
 
-  //9. TURN AND SHOOT FIFTH GOAL:
+  //9. TURN AND SHOOT GOAL E:
 
   auton_turn(80,300);
 
@@ -448,9 +468,11 @@ void autonomous( void ) {
 
   timed_gradient( -1.7, 1800);
 
-  shoot_balls();
+  shoot_corner_balls();
   auton_drive_forward(100.0, 22.0);
   poop();
+
+
 
 
 }
