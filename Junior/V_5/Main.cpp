@@ -138,6 +138,8 @@ void auton_drive_forward(double speed, double dist){
 
 //SPEED CALCULATOR FOR GRADIENT:
 
+//revs is distance from beginning and dist is from end:
+
 double speed_calc(double revs, double dist){
   double speed;
 
@@ -205,6 +207,34 @@ void gradient_drive(double revs){
     Drivetrain.stop(hold);
 
   }
+
+  void gradient_drive_no_reset(double revs){
+    double initial = RightFront.rotation(rev);
+  
+  //wait(0.3,sec);
+
+    while(RightFront.rotation(rev)> revs + initial){
+      double reading = RightFront.rotation(rev)- initial;
+      double dist = revs-reading;
+      double speed = speed_calc(reading, dist);
+
+      Brain.Screen.print("READING: ");
+      Brain.Screen.print(reading);
+      Brain.Screen.print("    SPEED: ");
+      Brain.Screen.print(speed);
+      Brain.Screen.newLine();
+
+
+      Drivetrain.drive(fwd, speed, rpm);
+
+    }
+
+    Drivetrain.stop(hold);
+
+  }
+
+
+
 
 
 
@@ -350,6 +380,12 @@ void poop(){
 void autonomous( void ) {
 
   
+  //TESTING FOR GRADIENT WITHOUT RESET:
+
+  //gradient_drive_no_reset(-3.0);
+
+
+
 
   //1. LAUNCH THE PRELOAD INTO GOAL A:
     
