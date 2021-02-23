@@ -142,16 +142,19 @@ void auton_drive_forward(double speed, double dist){
 
 double speed_calc(double revs, double dist){
   double speed;
+  double max_speed = -150; ///THIS IS THE MAX SPEED
 
   if(revs >= -0.25){
-    speed = -40+240*revs;
+    //speed = -40+240*revs;
+    speed = -40 + (-40 - max_speed)/(0.25) * revs;
   }
-  else if(dist >= -0.25){
-    speed = -40+240*dist;
+  else if(dist >= -0.7){
+    //speed = -40 + 84*dist;
+    speed = -40 + (-40 - max_speed)/(0.7)*dist;
   }
   
   else{
-    speed = -100;
+    speed = max_speed;
   }
   
   
@@ -185,11 +188,11 @@ double speed_calc_timer(double current_time, double time_left){
   double speed;
 
   if(current_time <= 0.25){
-    speed = -40+240*current_time;
+    speed = -40-240*current_time;
   }
 
   else if(time_left <= 0.25){
-    speed = -40+240*time_left;
+    speed = -40-240*time_left;
   }
 
   
@@ -220,9 +223,18 @@ void gradient_drive(double revs){
       double reading = RightFront.rotation(rev);
       double speed = speed_calc(reading, revs-reading);
 
+      Brain.Screen.print("READING: ");
       Brain.Screen.print(reading);
+      Brain.Screen.print(" ");
+      Brain.Screen.print(revs-reading);
+      Brain.Screen.print("    SPEED: ");
+      Brain.Screen.print(speed);
+      Brain.Screen.newLine();
+
 
       Drivetrain.drive(fwd, speed, rpm);
+
+      wait(1,msec);
 
     }
 
@@ -232,22 +244,27 @@ void gradient_drive(double revs){
 
   void gradient_on_time(double revs){
     double initial = Brain.timer(sec);
-    double target = (revs + 0.3375)/(100/60) + 0.5;
+    double initial_rot = RightFront.rotation(rev);
+    double target = -(revs + 0.3375)/(100/60) + 0.5;
     Brain.Screen.print("TARGET: ");
     Brain.Screen.print(target);
     Brain.Screen.newLine();
   
 
-    while(RightFront.rotation(rev)> revs){
+    while(RightFront.rotation(rev) - initial_rot> revs){
       double reading = Brain.timer(sec) - initial;
       double time_left = target -reading;
       double speed = speed_calc_timer(reading, time_left);
 
       Brain.Screen.print("READING: ");
       Brain.Screen.print(reading);
+      Brain.Screen.print(" ");
+      Brain.Screen.print(time_left);
       Brain.Screen.print("    SPEED: ");
       Brain.Screen.print(speed);
       Brain.Screen.newLine();
+
+      wait(100,msec);
 
       
 
@@ -321,11 +338,30 @@ void timed_gradient(double revs, double t){
 
 //MAKING A TURN WITH A TRESHOLD OF ERROR (DO NOT CHANGE)
 void make_turn(double speed, double ang, double tresh){
-  while(Drivetrain.heading() < ang-tresh || Drivetrain.heading() > ang+tresh){
+
+  if(speed < 0){
+    //CLOCKWISE:
+    while(Drivetrain.heading() < ang-tresh){
       Drivetrain.turn(right,speed, rpm);
       
     }
-  Drivetrain.stop();
+
+    Drivetrain.stop();
+
+  }
+
+  else{
+
+    //COUNTER CLOCKWISE:
+    while(Drivetrain.heading() > ang+tresh){
+      Drivetrain.turn(right,speed, rpm);
+      
+    }
+
+    Drivetrain.stop();
+  }
+  
+  
   
 }
 
@@ -344,6 +380,31 @@ void auton_turn(double speed, double ang){
     else if(Drivetrain.heading() < ang+0.5){
       make_turn(-9,ang,1.0);
     }
+
+  if(speed < 0){
+
+  
+    Drive_Left.spin(fwd, -5, rpm);
+    Drive_Right.stop(hold);
+
+    wait(90,msec);
+    Drivetrain.stop(hold);
+
+  }
+
+  else if(speed > 0){
+
+    Drive_Right.spin(fwd, -5, rpm);
+    Drive_Left.stop(hold);
+
+    wait(90,msec);
+    Drivetrain.stop(hold);
+
+  }
+  
+  
+
+
 
 
 }
@@ -419,6 +480,23 @@ void poop(){
 }
 
 
+void drive_straight_test(){
+  double initial = Brain.timer(sec);
+  TurnGyroSmart.setHeading(90, degrees);
+  while(Brain.timer(sec)-initial< 4){
+    double current_heading = Drivetrain.heading();
+    double correction = 1/3*(current_heading-90);
+
+    Drive_Left.spin(fwd, -50 + correction, rpm);
+    Drive_Right.spin(fwd, -50 - correction, rpm);
+
+    
+  }
+
+  Drivetrain.stop(hold);
+}
+
+
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -439,7 +517,7 @@ void autonomous( void ) {
 
 
 
-
+/*
   //1. LAUNCH THE PRELOAD INTO GOAL A:
     
     spin_top_wheels();
@@ -562,7 +640,10 @@ void autonomous( void ) {
   poop();
 
 
+*/
 
+
+gradient_drive(-3);
 
 }
 
