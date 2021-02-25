@@ -339,7 +339,14 @@ void timed_gradient(double revs, double t){
 //MAKING A TURN WITH A TRESHOLD OF ERROR (DO NOT CHANGE)
 void make_turn(double speed, double ang, double tresh){
 
-  if(speed < 0){
+  while(Drivetrain.heading() < ang-tresh || Drivetrain.heading() > ang +tresh){
+
+    Drivetrain.turn(right,speed, rpm);
+
+  }
+  Drivetrain.stop();
+
+  /*if(speed < 0){
     //CLOCKWISE:
     while(Drivetrain.heading() < ang-tresh){
       Drivetrain.turn(right,speed, rpm);
@@ -360,6 +367,7 @@ void make_turn(double speed, double ang, double tresh){
 
     Drivetrain.stop();
   }
+  */
   
   
   
@@ -384,20 +392,20 @@ void auton_turn(double speed, double ang){
   if(speed < 0){
 
   
-    Drive_Left.spin(fwd, -5, rpm);
+    Drive_Left.spin(fwd, -50, rpm);
     Drive_Right.stop(hold);
 
-    wait(90,msec);
+    wait(120,msec);
     Drivetrain.stop(hold);
 
   }
 
   else if(speed > 0){
 
-    Drive_Right.spin(fwd, -5, rpm);
+    Drive_Right.spin(fwd, -50, rpm);
     Drive_Left.stop(hold);
 
-    wait(90,msec);
+    wait(120,msec);
     Drivetrain.stop(hold);
 
   }
@@ -517,133 +525,103 @@ void autonomous( void ) {
 
 
 
-/*
+
   //1. LAUNCH THE PRELOAD INTO GOAL A:
     
     spin_top_wheels();
     wait(0.5,sec);
     roller_stop();
-
-
   //2. DRIVE TOWARDS THE FIRST BALL IN THE MIDDLE:
-
     intake_spin();
     spin_bottom_wheels();
-    gradient_drive(-4.84);
-
+    gradient_drive(-4.9);
     intake_stop();
     roller_stop();
-
   
     //3. TURN FOR GOAL B AND SHOOT:
     
     auton_turn(80, 180);
     wait(10,msec);
-
     intake_spin();
-
     timed_gradient(-2.4, 1875);
     shoot_balls();
-
-
-
-
+    
     //4. MOVE BACK, SPIT OUT BLUE, AND PICK UP NEXT BALL (near the corner):
     
     auton_drive_forward(100.0, 20.0);
-
     intake_stop();
     roller_stop();
-
     poop();
     wait(0.3,sec);
     
-    auton_turn(-100, 257);
-
+    auton_turn(-100, 254);
+    
+  
     intake_spin();
-
     gradient_drive(-4.0);
-
-
     //5. TURN AND SHOOT THE BALL IN GOAL C:
  
     auton_turn(50,230);
-    auton_drive(-100, 1000);  //can be changed to gradient + lowered at some point
-
+    
+    
+    auton_drive(-100, 700);  //can be changed to gradient + lowered at some point
     shoot_corner_balls();
-
+    
     auton_drive_forward(80.0, 20.0);
-
     poop();
-
-
+    
     ///// FIRST ROW FINISHED, SECOND ROW BEGINS
-
-
   // 6. TURN AND PICKUP BALL FOR GOAL D:
-
-
   auton_turn(-80, 0);
-
   intake_spin();
   spin_bottom_wheels();
-
-
-  gradient_drive(-3.15);
+  gradient_drive(-3.22);
   roller_stop();
   intake_stop();
 
+  
 
+  
   //7. TURN FOR GOAL D AND SHOOT
-
   auton_turn(80,270);
+  
+  
+  
   intake_spin();
   timed_gradient(-2.0, 700);
+  shoot_balls(); 
 
-  shoot_balls();  
+  
   auton_drive_forward(100.0, 22.0);
-
   intake_stop();
   roller_stop();
-
   poop();
   wait(0.3,sec);
-
-
+    
   //8. GET BALL FOR GOAL E:
-
-
+    
   auton_turn(-80,0);
-
   wait(0.1,sec);
-
   intake_spin();
-
   gradient_drive(-3.6);
-
   wait(0.1,sec);
-
   intake_stop();
-
-
-
   //9. TURN AND SHOOT GOAL E:
+  auton_turn(80,270);
+  gradient_drive(-1.04);
+  auton_turn(-80, 315);
 
-  auton_turn(80,300);
-
+  
   intake_spin();
-
-  timed_gradient( -1.7, 1800);
-
+  timed_gradient( -1.7, 700);
   shoot_corner_balls();
+ 
+ 
   auton_drive_forward(100.0, 22.0);
   poop();
+  
 
 
-*/
-
-
-gradient_drive(-3);
 
 }
 
