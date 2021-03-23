@@ -15,6 +15,9 @@
 #include "math.h"
 using namespace vex;
 #include <cmath>
+#include <string>
+#include <iostream>
+#include<stdio.h> 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*        Description: Competition template for VCS VEX V5                    */
@@ -142,15 +145,38 @@ void auton_drive_forward(double speed, double dist){
 
 double speed_calc(double revs, double dist){
   double speed;
-  double max_speed = -150; ///THIS IS THE MAX SPEED
+  double max_speed = -170; ///THIS IS THE MAX SPEED
 
   if(revs >= -0.25){
     //speed = -40+240*revs;
     speed = -40 + (-40 - max_speed)/(0.25) * revs;
   }
-  else if(dist >= -0.7){
+  else if(dist >= -1.0){
     //speed = -40 + 84*dist;
-    speed = -40 + (-40 - max_speed)/(0.7)*dist;
+    speed = -40 + (-40 - max_speed)/(1.0)*dist;
+  }
+  
+  else{
+    speed = max_speed;
+  }
+  
+  
+
+  return speed;
+}
+
+
+double speed_calc_back(double revs, double dist){
+  double speed;
+  double max_speed = 100; ///THIS IS THE MAX SPEED
+
+  if(revs <= 0.25){
+    //speed = -40+240*revs;
+    speed = 40 + (40 + max_speed)/(0.25) * revs;
+  }
+  else if(dist <= 1.0){
+    //speed = -40 + 84*dist;
+    speed = 40 + (40 + max_speed)/(1.0)*dist;
   }
   
   else{
@@ -168,14 +194,15 @@ double speed_calc(double revs, double dist){
 
 double speed_calc_2(double revs){
   double speed;
+  double max_speed = -160;
 
   if(revs >= -0.25){
-    speed = -40+240*revs;
+    speed = speed = -40 + (-40 - max_speed)/(0.25) * revs;;
   }
 
   
   else{
-    speed = -130;
+    speed = max_speed;
   }
   
   
@@ -222,6 +249,38 @@ void gradient_drive(double revs){
     while(RightFront.rotation(rev)> revs){
       double reading = RightFront.rotation(rev);
       double speed = speed_calc(reading, revs-reading);
+
+      Brain.Screen.print("READING: ");
+      Brain.Screen.print(reading);
+      Brain.Screen.print(" ");
+      Brain.Screen.print(revs-reading);
+      Brain.Screen.print("    SPEED: ");
+      Brain.Screen.print(speed);
+      Brain.Screen.newLine();
+
+
+      Drivetrain.drive(fwd, speed, rpm);
+
+      wait(1,msec);
+
+    }
+
+    Drivetrain.stop(hold);
+
+  }
+
+
+  void gradient_back(double revs){
+  RightBack.setRotation(0, rev);
+  LeftBack.setRotation(0, rev);
+  RightFront.setRotation(0, rev);
+  LeftFront.setRotation(0, rev);
+  
+  wait(0.3,sec);
+
+    while(RightFront.rotation(rev)< revs){
+      double reading = RightFront.rotation(rev);
+      double speed = speed_calc_back(reading, revs-reading);
 
       Brain.Screen.print("READING: ");
       Brain.Screen.print(reading);
@@ -373,11 +432,142 @@ void make_turn(double speed, double ang, double tresh){
   
 }
 
+double turn_calc(double head, double ang, double dir, double in_h){
+  double speed;
+  double real_ang;
+  double real_head;
+
+  if (dir < 0){
+
+    if (in_h >ang){
+      real_ang = ang + 360;
+
+      if(head < ang){
+        real_head = head + 360;
+
+      }
+      else{
+        real_head = head;
+      }
+
+    }
+
+    else{
+      real_ang = ang;
+      real_head = head;
+    }
+
+
+
+
+    if(real_ang - real_head < 45){
+
+      //speed = -85/45*(ang-head) -5;
+      speed = (85)/(pow(45,0.7)) * pow(45-real_ang+real_head,0.7) - 90;
+
+
+    }
+    else{
+      speed = -90;
+
+    }
+
+  }
+
+
+
+//THIS IS FOR COUNTER CW
+  else{
+
+    if (in_h  < ang){
+      real_ang = ang - 360;
+
+      if(head > ang){
+        real_head = head - 360;
+
+      }
+      else{
+        real_head = head;
+      }
+
+    }
+
+    else{
+      real_ang = ang;
+      real_head = head;
+    }
+
+    if(real_head- real_ang < 45){
+
+      speed = -(85)/(pow(45,0.7)) * pow(45-real_head+real_ang,0.7) + 90;
+
+
+    }
+    else{
+      speed = 90;
+
+    }
+  }
+
+
+
+  return speed;
+}
+
+void grad_turn(double ang, double dir, double t){
+  double in_heading = Drivetrain.heading();
+  while(Drivetrain.heading() < ang-1 || Drivetrain.heading() > ang +1){
+
+    double curr_heading = Drivetrain.heading();
+    double speed = turn_calc(curr_heading, ang, dir, in_heading);
+    
+
+    Drivetrain.turn(right,speed, rpm);
+
+
+
+    
+    /*char result[50];
+    char result2[50]; 
+    sprintf(result, "%f", speed);
+    sprintf(result2, "%f", curr_heading);
+
+    printf("\n Speed %s", result);
+    printf(" Heading %s", result2);
+    wait(40,msec);*/
+
+  }
+  Drivetrain.stop(hold);
+  //wait(0.1,sec);
+
+  if(dir < 0){
+
+    Drive_Right.spin(fwd, -50, rpm);
+    Drive_Left.stop(hold);
+
+    wait(t,msec);
+    Drivetrain.stop(hold);
+
+  }
+
+  else{
+
+    Drive_Left.spin(fwd, -50, rpm);
+    Drive_Right.stop(hold);
+
+    wait(t,msec);
+    Drivetrain.stop(hold);
+
+
+  }
+  
+}
+
 
 //TURN TO A SPECIFIC VALUE WITH CORRECTION:
 
 
-void auton_turn(double speed, double ang){
+void auton_turn(double speed, double ang, double t_wait){
   make_turn(speed, ang, 10);
 
   wait(100,msec);
@@ -395,7 +585,7 @@ void auton_turn(double speed, double ang){
     Drive_Left.spin(fwd, -50, rpm);
     Drive_Right.stop(hold);
 
-    wait(120,msec);
+    wait(t_wait,msec);
     Drivetrain.stop(hold);
 
   }
@@ -405,7 +595,7 @@ void auton_turn(double speed, double ang){
     Drive_Right.spin(fwd, -50, rpm);
     Drive_Left.stop(hold);
 
-    wait(120,msec);
+    wait(t_wait,msec);
     Drivetrain.stop(hold);
 
   }
@@ -450,7 +640,7 @@ void intake_stop(){
 void shoot_balls(){
 
   spinwheels();
-  wait(1.1,sec);
+  wait(1.0,sec);
   roller_stop();
   intake_stop();
 
@@ -463,7 +653,7 @@ void shoot_corner_balls(){
 
   spinwheels();
 
-  wait(1.2,sec);
+  wait(1.1,sec);
 
   roller_stop();
   intake_stop();
@@ -484,6 +674,7 @@ void poop(){
 
   roller_stop();
   intake_stop();
+  
 
 }
 
@@ -506,6 +697,19 @@ void drive_straight_test(){
 
 
 
+void poop_and_back(double dist){
+  Drivetrain.driveFor(fwd,dist, inches, 100, rpm, false);
+
+  wait(0.5, sec);
+
+  poop();
+
+  while(Drivetrain.isMoving()){
+    wait(20,msec);
+}
+}
+
+
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
 /*                              Autonomous Task                              */
@@ -518,10 +722,16 @@ void drive_straight_test(){
 
 void autonomous( void ) {
 
-  
-  //TESTING FOR GRADIENT WITHOUT RESET:
 
-  //gradient_drive_no_reset(-3.0);
+
+
+
+
+  //gradient_drive(-1.0);
+
+
+  
+
 
 
 
@@ -531,59 +741,67 @@ void autonomous( void ) {
     spin_top_wheels();
     wait(0.5,sec);
     roller_stop();
-  //2. DRIVE TOWARDS THE FIRST BALL IN THE MIDDLE:
+  //2. DRIVE TOWARDS THE FIRST BALL:
     intake_spin();
-    spin_bottom_wheels();
-    gradient_drive(-4.9);
+    //spin_bottom_wheels();
+    
+    //gradient_drive(-4.9);
+    gradient_drive(-1.4);
     intake_stop();
+    grad_turn(270, 1,120);
     roller_stop();
+    gradient_drive(-3.05);
   
     //3. TURN FOR GOAL B AND SHOOT:
     
-    auton_turn(80, 180);
+    grad_turn(180,1,120);
+    
     wait(10,msec);
     intake_spin();
-    timed_gradient(-2.4, 1875);
+    timed_gradient(-2.4, 700);//1875);
     shoot_balls();
     
     //4. MOVE BACK, SPIT OUT BLUE, AND PICK UP NEXT BALL (near the corner):
     
-    auton_drive_forward(100.0, 20.0);
-    intake_stop();
-    roller_stop();
-    poop();
-    wait(0.3,sec);
+    //auton_drive_forward(100.0, 20.0);
+    //intake_stop();
+    //roller_stop();
+    poop_and_back(20.0);
     
-    auton_turn(-100, 254);
-    
+   // grad_turn(254,-1);
+    auton_turn(-100, 254, 120);
   
     intake_spin();
-    gradient_drive(-4.0);
+    spin_bottom_wheels();
+    gradient_drive(-3.85);
     //5. TURN AND SHOOT THE BALL IN GOAL C:
  
-    auton_turn(50,230);
+    grad_turn(233, 1,0);
+    roller_stop();
     
     
-    auton_drive(-100, 700);  //can be changed to gradient + lowered at some point
+    timed_gradient(-2.4, 700);  
     shoot_corner_balls();
     
-    auton_drive_forward(80.0, 20.0);
-    poop();
+    //auton_drive_forward(80.0, 22.2); 
+    poop_and_back(22.2);
     
     ///// FIRST ROW FINISHED, SECOND ROW BEGINS
   // 6. TURN AND PICKUP BALL FOR GOAL D:
-  auton_turn(-80, 0);
+  //grad_turn(0, -1);
+  auton_turn(-80, 0, 120);
   intake_spin();
   spin_bottom_wheels();
-  gradient_drive(-3.22);
-  roller_stop();
-  intake_stop();
+  gradient_drive(-3.15); //SECOND VALL 
+  
+  
 
   
 
   
   //7. TURN FOR GOAL D AND SHOOT
-  auton_turn(80,270);
+  grad_turn(270,1,120);
+  roller_stop();
   
   
   
@@ -592,33 +810,76 @@ void autonomous( void ) {
   shoot_balls(); 
 
   
-  auton_drive_forward(100.0, 22.0);
-  intake_stop();
-  roller_stop();
-  poop();
-  wait(0.3,sec);
+  //auton_drive_forward(100.0, 21.0);
+  //intake_stop();
+  //roller_stop();
+  poop_and_back(21.0);
     
   //8. GET BALL FOR GOAL E:
     
-  auton_turn(-80,0);
-  wait(0.1,sec);
+  //grad_turn(360, -1);
+
+  auton_turn(-90,0, 130);
   intake_spin();
   gradient_drive(-3.6);
   wait(0.1,sec);
   intake_stop();
   //9. TURN AND SHOOT GOAL E:
-  auton_turn(80,270);
-  gradient_drive(-1.04);
-  auton_turn(-80, 315);
+  grad_turn(270, 11,120);
+  gradient_drive(-0.9);
+  grad_turn(315, -1,0);
 
   
   intake_spin();
   timed_gradient( -1.7, 700);
   shoot_corner_balls();
  
- 
-  auton_drive_forward(100.0, 22.0);
+  auton_drive_forward(100.0, 26);
+  make_turn(-80, 0, 15);
   poop();
+
+  
+ //10. TURN FOR WALL BALL NEAR E
+  
+  //grad_turn(270, 1);
+  auton_turn(90, 270, 130);
+  intake_spin();
+  spin_bottom_wheels();
+  gradient_drive(-1.6);
+
+  //11. BACK UP AND TURN TO I
+  
+
+  gradient_back(4.12);
+  intake_stop();
+  roller_stop();
+  grad_turn(180,1,120);
+  timed_gradient(-3, 2000);
+  shoot_balls();
+
+
+  //TURN FOR G
+  
+  gradient_back(0.9);
+  //grad_turn(58, 1);
+  auton_turn(90, 58, 80);
+
+  intake_spin();
+  timed_gradient(-4.0, 3000);
+
+  shoot_corner_balls();
+
+  poop_and_back(22.0);
+  
+
+  //timed_gradient(-1.7, 700);  
+  
+  /*
+
+  intake_spin();
+
+  gradient_drive(-3.1);
+  intake_stop();*/
   
 
 
@@ -698,9 +959,12 @@ void usercontrol( void ) {
     wait(5,msec);
       
     
-    Drive_Left.spin(vex::directionType::fwd, -0.4*deadzone(Controller1.Axis1.value()) - deadzone(Controller1.Axis3.value()), vex::velocityUnits::pct);
-    Drive_Right.spin(vex::directionType::fwd, 0.4*deadzone(Controller1.Axis1.value()) - deadzone(Controller1.Axis3.value()), vex::velocityUnits::pct);
+    //Drive_Left.spin(vex::directionType::fwd, -0.9*deadzone(Controller1.Axis1.value()) - 1.8*deadzone(Controller1.Axis3.value()), vex::velocityUnits::pct);
+    Drive_Right.spin(vex::directionType::fwd, 0.8*deadzone(Controller1.Axis1.value()) - 0.7*Controller1.Axis3.value(), vex::velocityUnits::pct);
+    Drive_Left.spin(vex::directionType::fwd,-0.8*deadzone(Controller1.Axis1.value()) - 0.7*Controller1.Axis3.value(), vex::velocityUnits::pct);
     
+    Brain.Screen.print(-0.6*deadzone(Controller1.Axis1.value()) - 0.8*Controller1.Axis3.value());
+    Brain.Screen.newLine();
 
     
       
